@@ -1,0 +1,37 @@
+name: Robot Scraper LunaTec 24/7
+
+on:
+  schedule:
+    - cron: '0 0,15 * * *'
+  workflow_dispatch:
+
+jobs:
+  ejecutar-scraper:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: scraper-unico
+      cancel-in-progress: false
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: 📥 Clonar el código
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: 📦 Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: 🚀 Ejecutar todas las plataformas
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SCRAPER_MAX_CONCURRENCY: '10'
+
+        run: python app.py
