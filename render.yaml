@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: scraper-health
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py serve
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+cronJobs:
+  - name: scrape-vtex
+    schedule: "0 */6 * * *"
+    command: python app.py run
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
